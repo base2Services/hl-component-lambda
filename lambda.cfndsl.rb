@@ -71,9 +71,11 @@ CloudFormation do
       Tags tags
     end
 
-    Logs_LogGroup("#{function_name}LogGroup") do
-      LogGroupName FnSub("/aws/lambda/${EnvironmentName}/#{function_name}")
-      RetentionInDays lambda_config['log_retention'] if lambda_config.has_key? 'log_retention'
+    if lambda_config['create_log_group'].nil? or lambda_config['create_log_group']
+      Logs_LogGroup("#{function_name}LogGroup") do
+        LogGroupName FnSub("/aws/lambda/${EnvironmentName}/#{function_name}")
+        RetentionInDays lambda_config['log_retention'] if lambda_config.has_key? 'log_retention'
+      end
     end
 
     lambda_config['events'].each do |name,event|
